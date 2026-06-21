@@ -2218,7 +2218,7 @@ impl ProxyService {
                         }
                     } else {
                         log::warn!(
-                            "Codex config contains a non-table mcp_servers section; skipping MCP merge"
+                            "Codex config contains a non-table mcp_servers section; skipping compatibility merge"
                         );
                     }
                 }
@@ -5026,7 +5026,7 @@ base_url = "https://new.example/v1"
 
         assert!(
             config.contains("[mcp_servers.echo]"),
-            "existing Codex MCP section should survive proxy hot-switch backup update"
+            "existing Codex mcp_servers section should survive proxy hot-switch backup update"
         );
         assert!(
             config.contains("https://new.example/v1"),
@@ -5403,7 +5403,7 @@ command = "latest-command"
                 .and_then(|v| v.get("command"))
                 .and_then(|v| v.as_str()),
             Some("new-command"),
-            "new provider/common-config MCP definition should win on conflict"
+            "new provider/common-config mcp_servers definition should win on conflict"
         );
         assert_eq!(
             mcp_servers
@@ -5411,7 +5411,7 @@ command = "latest-command"
                 .and_then(|v| v.get("command"))
                 .and_then(|v| v.as_str()),
             Some("legacy-command"),
-            "backup-only MCP entries should still be preserved"
+            "backup-only mcp_servers entries should still be preserved"
         );
         assert_eq!(
             mcp_servers
@@ -5419,7 +5419,7 @@ command = "latest-command"
                 .and_then(|v| v.get("command"))
                 .and_then(|v| v.as_str()),
             Some("latest-command"),
-            "new MCP entries should remain in the restore backup"
+            "new mcp_servers entries should remain in the restore backup"
         );
     }
 

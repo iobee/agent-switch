@@ -165,9 +165,6 @@ impl ConfigService {
             auth,
             cfg_text,
         )?;
-        // 注意：MCP 同步在 v3.7.0 中已通过 McpService 进行，不再在此调用
-        // sync_enabled_to_codex 使用旧的 config.mcp.codex 结构，在新架构中为空
-        // MCP 的启用/禁用应通过 McpService::toggle_app 进行
 
         let cfg_text_after = crate::codex_config::read_and_validate_codex_config_text()?;
         if let Some(manager) = config.get_manager_mut(&AppType::Codex) {

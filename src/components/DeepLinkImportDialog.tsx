@@ -13,9 +13,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { PromptConfirmation } from "./deeplink/PromptConfirmation";
-import { McpConfirmation } from "./deeplink/McpConfirmation";
-import { SkillConfirmation } from "./deeplink/SkillConfirmation";
 import { ProviderIcon } from "./ProviderIcon";
 
 interface DeeplinkError {
@@ -30,29 +27,18 @@ export function DeepLinkImportDialog() {
   const [isImporting, setIsImporting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // 容错判断：MCP 导入结果可能缺少 type 字段
-  const isMcpImportResult = (
-    value: unknown,
-  ): value is {
-    importedCount: number;
-    importedIds: string[];
-    failed: Array<{ id: string; error: string }>;
-    type?: "mcp";
-  } => {
-    if (!value || typeof value !== "object") return false;
-    const v = value as Record<string, unknown>;
-    return (
-      typeof v.importedCount === "number" &&
-      Array.isArray(v.importedIds) &&
-      Array.isArray(v.failed)
-    );
-  };
-
   useEffect(() => {
     // Listen for deep link import events
     const unlistenImport = listen<DeepLinkImportRequest>(
       "deeplink-import",
       async (event) => {
+        if (event.payload.resource && event.payload.resource !== "provider") {
+          toast.error(t("deeplink.unsupportedResource"), {
+            description: t("deeplink.unsupportedResourceDescription"),
+          });
+          return;
+        }
+
         // If config is present, merge it to get the complete configuration
         if (event.payload.config || event.payload.configUrl) {
           try {
@@ -98,39 +84,7 @@ export function DeepLinkImportDialog() {
 
     try {
       const result = await deeplinkApi.importFromDeeplink(request);
-      const refreshMcp = async (summary: {
-        importedCount: number;
-        importedIds: string[];
-        failed: Array<{ id: string; error: string }>;
-      }) => {
-        // 强制刷新 MCP 相关缓存，确保管理页重新从数据库加载
-        await queryClient.invalidateQueries({
-          queryKey: ["mcp", "all"],
-          refetchType: "all",
-        });
-        await queryClient.refetchQueries({
-          queryKey: ["mcp", "all"],
-          type: "all",
-        });
 
-        if (summary.failed.length > 0) {
-          toast.warning(t("deeplink.mcpPartialSuccess"), {
-            description: t("deeplink.mcpPartialSuccessDescription", {
-              success: summary.importedCount,
-              failed: summary.failed.length,
-            }),
-          });
-        } else {
-          toast.success(t("deeplink.mcpImportSuccess"), {
-            description: t("deeplink.mcpImportSuccessDescription", {
-              count: summary.importedCount,
-            }),
-            closeButton: true,
-          });
-        }
-      };
-
-      // Handle different result types
       if ("type" in result) {
         if (result.type === "provider") {
           await queryClient.invalidateQueries({
@@ -142,41 +96,9 @@ export function DeepLinkImportDialog() {
             }),
             closeButton: true,
           });
-        } else if (result.type === "prompt") {
-          // Prompts don't use React Query, trigger a custom event for refresh
-          window.dispatchEvent(
-            new CustomEvent("prompt-imported", {
-              detail: { app: request.app },
-            }),
-          );
-          toast.success(t("deeplink.promptImportSuccess"), {
-            description: t("deeplink.promptImportSuccessDescription", {
-              name: request.name,
-            }),
-            closeButton: true,
-          });
-        } else if (result.type === "mcp") {
-          await refreshMcp(result);
-        } else if (result.type === "skill") {
-          // Refresh Skills with aggressive strategy
-          queryClient.invalidateQueries({
-            queryKey: ["skills"],
-            refetchType: "all",
-          });
-          await queryClient.refetchQueries({
-            queryKey: ["skills"],
-            type: "all",
-          });
-          toast.success(t("deeplink.skillImportSuccess"), {
-            description: t("deeplink.skillImportSuccessDescription", {
-              repo: request.repo,
-            }),
-            closeButton: true,
-          });
+        } else {
+          throw new Error(t("deeplink.unsupportedResource"));
         }
-      } else if (isMcpImportResult(result)) {
-        // 兜底处理：旧版本后端可能未返回 type 字段
-        await refreshMcp(result);
       } else {
         // Legacy return type (string ID) - assume provider
         await queryClient.invalidateQueries({
@@ -290,31 +212,11 @@ export function DeepLinkImportDialog() {
   };
 
   const getTitle = () => {
-    if (!request) return t("deeplink.confirmImport");
-    switch (request.resource) {
-      case "prompt":
-        return t("deeplink.importPrompt");
-      case "mcp":
-        return t("deeplink.importMcp");
-      case "skill":
-        return t("deeplink.importSkill");
-      default:
-        return t("deeplink.confirmImport");
-    }
+    return t("deeplink.confirmImport");
   };
 
   const getDescription = () => {
-    if (!request) return t("deeplink.confirmImportDescription");
-    switch (request.resource) {
-      case "prompt":
-        return t("deeplink.importPromptDescription");
-      case "mcp":
-        return t("deeplink.importMcpDescription");
-      case "skill":
-        return t("deeplink.importSkillDescription");
-      default:
-        return t("deeplink.confirmImportDescription");
-    }
+    return t("deeplink.confirmImportDescription");
   };
 
   return (
@@ -330,17 +232,6 @@ export function DeepLinkImportDialog() {
 
             {/* 主体内容整体右移，略大于标题内边距，让内容看起来不贴边 */}
             <div className="space-y-4 px-8 py-4 max-h-[60vh] overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar]:block [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-700">
-              {request.resource === "prompt" && (
-                <PromptConfirmation request={request} />
-              )}
-              {request.resource === "mcp" && (
-                <McpConfirmation request={request} />
-              )}
-              {request.resource === "skill" && (
-                <SkillConfirmation request={request} />
-              )}
-
-              {/* Legacy Provider View */}
               {(request.resource === "provider" || !request.resource) && (
                 <>
                   {/* Provider Icon - enlarge and center near the top */}

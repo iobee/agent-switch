@@ -22,7 +22,7 @@ function getWarningText(
     case "legacy_agents_timeout":
       return t("openclaw.health.legacyTimeout", {
         defaultValue:
-          "agents.defaults.timeout is deprecated. Save the Agents panel to migrate it to timeoutSeconds.",
+          "OpenClaw timeout is using a deprecated field. Save the provider settings to migrate it to timeoutSeconds.",
       });
     case "stringified_env_vars":
       return t("openclaw.health.stringifiedEnvVars", {

@@ -13,7 +13,6 @@ use crate::config::{delete_file, get_claude_settings_path, read_json_file, write
 use crate::database::Database;
 use crate::error::AppError;
 use crate::provider::Provider;
-use crate::services::mcp::McpService;
 use crate::store::AppState;
 
 use super::gemini_auth::{
@@ -931,8 +930,6 @@ pub(crate) fn sync_current_provider_for_app_to_live(
         }
     }
 
-    McpService::sync_all_enabled(state)?;
-
     Ok(())
 }
 
@@ -999,17 +996,6 @@ pub fn sync_current_to_live(state: &AppState) -> Result<(), AppError> {
         }
     }
 
-    // MCP sync
-    McpService::sync_all_enabled(state)?;
-
-    // Skill sync
-    for app_type in AppType::all() {
-        if let Err(e) = crate::services::skill::SkillService::sync_to_app(&state.db, &app_type) {
-            log::warn!("同步 Skill 到 {app_type:?} 失败: {e}");
-            // Continue syncing other apps, don't abort
-        }
-    }
-
     Ok(())
 }
 
@@ -1067,7 +1053,7 @@ pub fn read_live_settings(app_type: AppType) -> Result<Value, AppError> {
             let env_json = env_to_json(&env_map);
             let env_obj = env_json.get("env").cloned().unwrap_or_else(|| json!({}));
 
-            // Read settings.json file (MCP config etc.)
+            // Read settings.json file (additional Gemini settings)
             let settings_path = get_gemini_settings_path();
             let config_obj = if settings_path.exists() {
                 read_json_file(&settings_path)?
@@ -1203,7 +1189,7 @@ pub fn import_default_config(state: &AppState, app_type: AppType) -> Result<bool
             let env_json = env_to_json(&env_map);
             let env_obj = env_json.get("env").cloned().unwrap_or_else(|| json!({}));
 
-            // Read settings.json file (MCP config etc.)
+            // Read settings.json file (additional Gemini settings)
             let settings_path = get_gemini_settings_path();
             let config_obj = if settings_path.exists() {
                 read_json_file(&settings_path)?

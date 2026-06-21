@@ -1,6 +1,6 @@
 # CC Switch User Manual / 用户手册 / ユーザーマニュアル
 
-> Claude Code / Claude Desktop / Codex / Gemini CLI / OpenCode / OpenClaw / Hermes
+> Local AI API Gateway and model/provider switcher
 
 ## Language / 语言 / 言語
 

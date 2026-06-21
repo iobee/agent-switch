@@ -371,13 +371,10 @@ impl Database {
         let provider_count: i64 = conn
             .query_row("SELECT COUNT(*) FROM providers", [], |row| row.get(0))
             .map_err(|e| AppError::Database(e.to_string()))?;
-        let mcp_count: i64 = conn
-            .query_row("SELECT COUNT(*) FROM mcp_servers", [], |row| row.get(0))
-            .map_err(|e| AppError::Database(e.to_string()))?;
 
-        if provider_count == 0 && mcp_count == 0 {
+        if provider_count == 0 {
             return Err(AppError::Config(
-                "导入的 SQL 未包含有效的供应商或 MCP 数据".to_string(),
+                "导入的 SQL 未包含有效的供应商数据".to_string(),
             ));
         }
         Ok(())

@@ -2,7 +2,7 @@
 
 # CC Switch
 
-### The All-in-One Manager for Claude Code, Claude Desktop, Codex, Gemini CLI, OpenCode, OpenClaw & Hermes Agent
+### Local AI API Gateway and Model/Provider Switcher
 
 [![Version](https://img.shields.io/github/v/release/farion1231/cc-switch?color=blue&label=version)](https://github.com/farion1231/cc-switch/releases)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/farion1231/cc-switch/releases)
@@ -155,17 +155,18 @@ Register now via <a href="https://pateway.ai/?ch=etzpm8&aff=WB6M6F67#/">this lin
 
 ## Why CC Switch?
 
-Modern AI-powered coding relies on tools like Claude Code, Claude Desktop, Codex, Gemini CLI, OpenCode, OpenClaw, and Hermes — but each has its own configuration format. Switching API providers means manually editing JSON, TOML, or `.env` files, and there is no unified way to manage MCP and Skills across multiple tools.
+Modern AI-powered coding often means switching between different models, providers, and API protocols. Claude Code, Claude Desktop, Codex, Gemini CLI, OpenCode, OpenClaw, and Hermes each have their own configuration format, and editing JSON, TOML, or `.env` files by hand is slow and easy to get wrong.
 
-**CC Switch** gives you a single desktop app to manage all supported AI tools. Instead of editing config files by hand, you get a visual interface to import providers with one click, switch between them instantly, with 50+ built-in provider presets, unified MCP and Skills management, and system tray quick switching — all backed by a reliable SQLite database with atomic writes that protect your configs from corruption.
+**CC Switch** is a local desktop control plane for an AI API Gateway. It manages upstream providers, model routing, protocol adaptation, usage monitoring, and failover from one UI. You can add 50+ provider presets, switch models/providers from the app or tray, and rely on SQLite, atomic writes, and automatic backups to protect local config files.
 
-- **One App, Seven Tools** — Manage Claude Code, Claude Desktop, Codex, Gemini CLI, OpenCode, OpenClaw, and Hermes from a single interface
-- **No More Manual Editing** — 50+ provider presets including AWS Bedrock, NVIDIA NIM, and community relays; just pick and switch
-- **Unified MCP & Skills Management** — One panel to manage MCP servers and Skills across Claude, Codex, Gemini, OpenCode, and Hermes with bidirectional sync
+- **Local AI API Gateway** — Provide a unified local entrypoint for Claude, Codex, Gemini, and compatible clients
+- **Model & Provider Switching** — 50+ provider presets across official services, cloud providers, and community relays
+- **Protocol Adaptation & Routing** — Adapt Claude / OpenAI / Gemini request formats where supported
+- **Usage Monitoring** — Track requests, tokens, cost, latency, errors, and provider behavior
+- **Failover** — Auto-failover, circuit breakers, provider health monitoring, and backup queues
 - **System Tray Quick Switch** — Switch providers instantly from the tray menu, no need to open the full app
-- **Cloud Sync** — Sync provider data across devices via Dropbox, OneDrive, iCloud, or WebDAV servers
+- **Sync & Backup** — Sync provider data via custom config directories, WebDAV, or S3
 - **Cross-Platform** — Native desktop app for Windows, macOS, and Linux, built with Tauri 2
-- **Built-in Utilities** — Includes various utilities for first-launch login confirmation, signature bypass, plugin extension sync, and more
 
 ## Screenshots
 
@@ -177,36 +178,25 @@ Modern AI-powered coding relies on tools like Claude Code, Claude Desktop, Codex
 
 [Full Changelog](CHANGELOG.md) | [Release Notes](docs/release-notes/v3.16.1-en.md)
 
-### Provider Management
+### Model & Provider Management
 
 - **7 supported tools, 50+ presets** — Claude Code, Claude Desktop, Codex, Gemini CLI, OpenCode, OpenClaw, Hermes; copy your key and import with one click
 - **Universal providers** — One config syncs to Claude Code, Codex, and Gemini CLI
 - One-click switching, system tray quick access, drag-and-drop sorting, import/export
 
-### Proxy & Failover
+### Local Gateway & Failover
 
-- **Local proxy with hot-switching** — Format conversion, auto-failover, circuit breaker, provider health monitoring, and request rectifier
-- **App-level takeover** — Independently proxy Claude, Codex, or Gemini, down to individual providers
-
-### MCP, Prompts & Skills
-
-- **Unified MCP panel** — Manage MCP servers across Claude, Codex, Gemini, OpenCode, and Hermes with bidirectional sync and Deep Link import
-- **Prompts** — Markdown editor with cross-app sync (CLAUDE.md / AGENTS.md / GEMINI.md) and backfill protection
-- **Skills** — One-click install from GitHub repos or ZIP files, custom repository management, with symlink and file copy support
+- **Local Gateway with hot-switching** — Format conversion, auto-failover, circuit breaker, provider health monitoring, and request rectifier
+- **App-level takeover** — Independently route Claude, Codex, or Gemini through the Gateway, down to individual providers
 
 ### Usage & Cost Tracking
 
 - **Usage dashboard** — Track spending, requests, and tokens with trend charts, detailed request logs, and custom per-model pricing
 
-### Session Manager & Workspace
-
-- Browse, search, and restore conversation history across supported session sources
-- **Workspace editor** (OpenClaw) — Edit agent files (AGENTS.md, SOUL.md, etc.) with Markdown preview
-
 ### System & Platform
 
 - **Cloud sync** — Custom config directory (Dropbox, OneDrive, iCloud, NAS) and WebDAV server sync
-- **Deep Link** (`ccswitch://`) — Import providers, MCP servers, prompts, and skills via URL
+- **Deep Link** (`ccswitch://`) — Import provider configurations via URL
 - Dark / Light / System theme, auto-launch, auto-updater, atomic writes, auto-backups, i18n (zh/zh-TW/en/ja)
 
 ## FAQ
@@ -214,7 +204,7 @@ Modern AI-powered coding relies on tools like Claude Code, Claude Desktop, Codex
 <details>
 <summary><strong>Which AI tools does CC Switch support?</strong></summary>
 
-CC Switch supports seven tools: **Claude Code**, **Claude Desktop**, **Codex**, **Gemini CLI**, **OpenCode**, **OpenClaw**, and **Hermes**. Each tool has dedicated provider presets and configuration management.
+CC Switch focuses on provider and model switching for **Claude Code**, **Claude Desktop**, **Codex**, **Gemini CLI**, **OpenCode**, **OpenClaw**, and **Hermes**. OpenClaw and Hermes are treated as provider targets, not separate agent-management surfaces.
 
 </details>
 
@@ -226,9 +216,9 @@ For most tools, yes — restart your terminal or the CLI tool for changes to tak
 </details>
 
 <details>
-<summary><strong>My plugin configuration disappeared after switching providers — what happened?</strong></summary>
+<summary><strong>My extra client configuration disappeared after switching providers — what happened?</strong></summary>
 
-CC Switch provides a "Shared Config Snippet" feature to pass common data (beyond API keys and endpoints) between providers. Go to "Edit Provider" → "Shared Config Panel" → click "Extract from Current Provider" to save all common data. When creating a new provider, check "Write Shared Config" (enabled by default) to include plugin data in the new provider. All your configuration items are preserved in the default provider imported when you first launched the app.
+CC Switch provides a "Shared Config Snippet" feature to pass common data (beyond API keys and endpoints) between providers. Go to "Edit Provider" → "Shared Config Panel" → click "Extract from Current Provider" to save common client settings such as headers, model aliases, or environment fields. When creating a new provider, check "Write Shared Config" (enabled by default) to include those fields in the new provider.
 
 </details>
 
@@ -256,17 +246,15 @@ Add an official provider from the preset list. After switching to it, run the Lo
 <details>
 <summary><strong>Where is my data stored?</strong></summary>
 
-- **Database**: `~/.cc-switch/cc-switch.db` (SQLite — providers, MCP, prompts, skills)
+- **Database**: `~/.cc-switch/cc-switch.db` (SQLite — providers, Gateway state, usage, and configuration data)
 - **Local settings**: `~/.cc-switch/settings.json` (device-level UI preferences)
 - **Backups**: `~/.cc-switch/backups/` (auto-rotated, keeps 10 most recent)
-- **Skills**: `~/.cc-switch/skills/` (symlinked to corresponding apps by default)
-- **Skill Backups**: `~/.cc-switch/skill-backups/` (created automatically before uninstall, keeps 20 most recent)
 
 </details>
 
 ## Documentation
 
-For detailed guides on every feature, check out the **[User Manual](docs/user-manual/en/README.md)** — covering provider management, MCP/Prompts/Skills, proxy & failover, and more.
+For detailed guides, check out the **[User Manual](docs/user-manual/en/README.md)** — covering provider management, local Gateway, failover, usage tracking, sync, and backups.
 
 ## Quick Start
 
@@ -279,12 +267,11 @@ For detailed guides on every feature, check out the **[User Manual](docs/user-ma
 3. **Takes Effect**: Restart your terminal or the corresponding CLI tool to apply changes (Claude Code does not require a restart)
 4. **Back to Official**: Add an "Official Login" preset, restart the CLI tool, then follow its login/OAuth flow
 
-### MCP, Prompts, Skills & Sessions
+### Gateway, Usage & High Availability
 
-- **MCP**: Click the "MCP" button → Add servers via templates or custom config → Toggle per-app sync
-- **Prompts**: Click "Prompts" → Create presets with Markdown editor → Activate to sync to live files
-- **Skills**: Click "Skills" → Browse GitHub repos → One-click install to supported apps
-- **Sessions**: Click "Sessions" → Browse, search, and restore conversation history across supported session sources
+- **Gateway**: Start the local Gateway in Settings and enable app takeover where needed
+- **Usage**: Review requests, tokens, cost, latency, and errors from the Usage page
+- **Failover**: Configure backup provider queues and circuit breaker policies for Claude / Codex / Gemini
 
 > **Note**: On first launch, you can manually import existing CLI tool configs as the default provider.
 
@@ -373,9 +360,9 @@ Download the latest Linux build from the [Releases](../../releases) page:
 **Key Components**
 
 - **ProviderService**: Provider CRUD, switching, backfill, sorting
-- **McpService**: MCP server management, import/export, live file sync
-- **ProxyService**: Local proxy mode with hot-switching and format conversion
-- **SessionManager**: Conversation history browsing across supported session sources
+- **ProxyService**: Local Gateway mode with hot-switching, format conversion, and app takeover
+- **FailoverService**: Provider health, circuit breakers, and backup queues
+- **UsageService**: Request logs, tokens, cost, and model usage
 - **ConfigService**: Config import/export, backup rotation
 - **SpeedtestService**: API endpoint latency measurement
 
@@ -481,12 +468,7 @@ pnpm test:unit --coverage
 ├── src/                        # Frontend (React + TypeScript)
 │   ├── components/
 │   │   ├── providers/          # Provider management
-│   │   ├── mcp/                # MCP panel
-│   │   ├── prompts/            # Prompts management
-│   │   ├── skills/             # Skills management
-│   │   ├── sessions/           # Session Manager
-│   │   ├── proxy/              # Proxy mode panel
-│   │   ├── openclaw/           # OpenClaw config panels
+│   │   ├── proxy/              # Gateway and failover panels
 │   │   ├── settings/           # Settings (Terminal/Backup/About)
 │   │   ├── deeplink/           # Deep Link import
 │   │   ├── env/                # Environment variable management
@@ -498,7 +480,7 @@ pnpm test:unit --coverage
 │   │   ├── api/                # Tauri API wrapper (type-safe)
 │   │   └── query/              # TanStack Query config
 │   ├── locales/                # Translations (zh/zh-TW/en/ja)
-│   ├── config/                 # Presets (providers/mcp)
+│   ├── config/                 # Provider and Gateway presets
 │   └── types/                  # TypeScript definitions
 ├── src-tauri/                  # Backend (Rust)
 │   └── src/
@@ -506,9 +488,7 @@ pnpm test:unit --coverage
 │       ├── services/           # Business logic layer
 │       ├── database/           # SQLite DAO layer
 │       ├── proxy/              # Proxy module
-│       ├── session_manager/    # Session management
-│       ├── deeplink/           # Deep Link handling
-│       └── mcp/                # MCP sync module
+│       └── deeplink/           # Deep Link handling
 ├── tests/                      # Frontend tests
 └── assets/                     # Screenshots & partner resources
 ```

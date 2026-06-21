@@ -32,10 +32,6 @@ export const settingsSchema = z.object({
   currentProviderCodex: z.string().optional(),
   currentProviderGemini: z.string().optional(),
 
-  // Skill 同步设置
-  skillSyncMethod: z.enum(["auto", "symlink", "copy"]).optional(),
-  skillStorageLocation: z.enum(["cc_switch", "unified"]).optional(),
-
   // WebDAV v2 同步设置（通过专用命令保存，schema 仅用于读取）
   webdavSync: z
     .object({

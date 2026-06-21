@@ -148,47 +148,6 @@ pub struct OpenClawModelCatalogEntry {
     pub extra: HashMap<String, Value>,
 }
 
-/// OpenClaw agents.defaults 配置
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OpenClawAgentsDefaults {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub model: Option<OpenClawDefaultModel>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub models: Option<HashMap<String, OpenClawModelCatalogEntry>>,
-    #[serde(flatten)]
-    pub extra: HashMap<String, Value>,
-}
-
-/// OpenClaw agents 顶层配置
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(dead_code)]
-pub struct OpenClawAgents {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub defaults: Option<OpenClawAgentsDefaults>,
-    #[serde(flatten)]
-    pub extra: HashMap<String, Value>,
-}
-
-/// OpenClaw env 配置（openclaw.json 的 env 节点）
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OpenClawEnvConfig {
-    #[serde(flatten)]
-    pub vars: HashMap<String, Value>,
-}
-
-/// OpenClaw tools 配置（openclaw.json 的 tools 节点）
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OpenClawToolsConfig {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub profile: Option<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub allow: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub deny: Vec<String>,
-    #[serde(flatten)]
-    pub extra: HashMap<String, Value>,
-}
-
 // ============================================================================
 // Core Read/Write Functions
 // ============================================================================
@@ -625,12 +584,6 @@ fn scan_openclaw_health_from_value(config: &Value) -> Vec<OpenClawHealthWarning>
     warnings
 }
 
-fn remove_legacy_timeout(defaults_value: &mut Value) {
-    if let Some(defaults_obj) = defaults_value.as_object_mut() {
-        defaults_obj.remove("timeout");
-    }
-}
-
 // ============================================================================
 // Provider Functions (Untyped - for raw JSON operations)
 // ============================================================================
@@ -819,96 +772,6 @@ pub fn set_model_catalog(
         .cloned()
         .unwrap_or_else(|| Value::Object(Map::new()));
     write_root_section("agents", &agents_value)
-}
-
-// ============================================================================
-// Full Agents Defaults Functions
-// ============================================================================
-
-/// Read the full agents.defaults config
-pub fn get_agents_defaults() -> Result<Option<OpenClawAgentsDefaults>, AppError> {
-    let config = read_openclaw_config()?;
-
-    let Some(defaults_value) = config.get("agents").and_then(|a| a.get("defaults")) else {
-        return Ok(None);
-    };
-
-    let defaults = serde_json::from_value(defaults_value.clone())
-        .map_err(|e| AppError::Config(format!("Failed to parse agents.defaults: {e}")))?;
-    Ok(Some(defaults))
-}
-
-/// Write the full agents.defaults config
-pub fn set_agents_defaults(
-    defaults: &OpenClawAgentsDefaults,
-) -> Result<OpenClawWriteOutcome, AppError> {
-    let mut config = read_openclaw_config()?;
-    let root = ensure_object(&mut config);
-    let agents = root
-        .entry("agents".to_string())
-        .or_insert_with(|| Value::Object(Map::new()));
-
-    let mut defaults_value =
-        serde_json::to_value(defaults).map_err(|e| AppError::JsonSerialize { source: e })?;
-    remove_legacy_timeout(&mut defaults_value);
-    ensure_object(agents).insert("defaults".to_string(), defaults_value);
-
-    let agents_value = root
-        .get("agents")
-        .cloned()
-        .unwrap_or_else(|| Value::Object(Map::new()));
-    write_root_section("agents", &agents_value)
-}
-
-// ============================================================================
-// Env Configuration
-// ============================================================================
-
-/// Read the env config section
-pub fn get_env_config() -> Result<OpenClawEnvConfig, AppError> {
-    let config = read_openclaw_config()?;
-
-    let Some(env_value) = config.get("env") else {
-        return Ok(OpenClawEnvConfig {
-            vars: HashMap::new(),
-        });
-    };
-
-    serde_json::from_value(env_value.clone())
-        .map_err(|e| AppError::Config(format!("Failed to parse env config: {e}")))
-}
-
-/// Write the env config section
-pub fn set_env_config(env: &OpenClawEnvConfig) -> Result<OpenClawWriteOutcome, AppError> {
-    let value = serde_json::to_value(env).map_err(|e| AppError::JsonSerialize { source: e })?;
-    write_root_section("env", &value)
-}
-
-// ============================================================================
-// Tools Configuration
-// ============================================================================
-
-/// Read the tools config section
-pub fn get_tools_config() -> Result<OpenClawToolsConfig, AppError> {
-    let config = read_openclaw_config()?;
-
-    let Some(tools_value) = config.get("tools") else {
-        return Ok(OpenClawToolsConfig {
-            profile: None,
-            allow: Vec::new(),
-            deny: Vec::new(),
-            extra: HashMap::new(),
-        });
-    };
-
-    serde_json::from_value(tools_value.clone())
-        .map_err(|e| AppError::Config(format!("Failed to parse tools config: {e}")))
-}
-
-/// Write the tools config section
-pub fn set_tools_config(tools: &OpenClawToolsConfig) -> Result<OpenClawWriteOutcome, AppError> {
-    let value = serde_json::to_value(tools).map_err(|e| AppError::JsonSerialize { source: e })?;
-    write_root_section("tools", &value)
 }
 
 #[cfg(test)]

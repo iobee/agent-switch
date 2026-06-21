@@ -135,7 +135,7 @@ describe("WebdavSyncSection", () => {
       snapshotId: "snapshot-1",
       version: 2,
       compatible: true,
-      artifacts: ["db.sql", "skills.zip"],
+      artifacts: ["db.sql"],
     });
     settingsApiMock.webdavSyncUpload.mockResolvedValue({ status: "uploaded" });
     settingsApiMock.webdavSyncDownload.mockResolvedValue({ status: "downloaded" });

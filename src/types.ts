@@ -223,12 +223,6 @@ export interface ProviderMeta {
   githubAccountId?: string;
 }
 
-// Skill 同步方式
-export type SkillSyncMethod = "auto" | "symlink" | "copy";
-
-// Skill 存储位置
-export type SkillStorageLocation = "cc_switch" | "unified";
-
 // Claude API 格式类型
 // - "anthropic": 原生 Anthropic Messages API 格式，直接透传
 // - "openai_chat": OpenAI Chat Completions 格式，需要格式转换
@@ -390,12 +384,6 @@ export interface Settings {
   // 当前 Gemini 供应商 ID（优先于数据库 is_current）
   currentProviderGemini?: string;
 
-  // ===== Skill 同步设置 =====
-  // Skill 同步方式：auto（默认，优先 symlink）、symlink、copy
-  skillSyncMethod?: SkillSyncMethod;
-  // Skill 存储位置：cc_switch（默认）或 unified（~/.agents/skills/）
-  skillStorageLocation?: SkillStorageLocation;
-
   // ===== WebDAV v2 同步设置 =====
   webdavSync?: WebDavSyncSettings;
 
@@ -425,83 +413,6 @@ export interface Settings {
       migratedStateRows?: number;
     };
   };
-}
-
-export interface SessionMeta {
-  providerId: string;
-  sessionId: string;
-  title?: string;
-  summary?: string;
-  projectDir?: string | null;
-  createdAt?: number;
-  lastActiveAt?: number;
-  sourcePath?: string;
-  resumeCommand?: string;
-}
-
-export interface SessionMessage {
-  role: string;
-  content: string;
-  ts?: number;
-}
-
-// MCP 服务器连接参数（宽松：允许扩展字段）
-export interface McpServerSpec {
-  // 可选：社区常见 .mcp.json 中 stdio 配置可不写 type
-  type?: "stdio" | "http" | "sse";
-  // stdio 字段
-  command?: string;
-  args?: string[];
-  env?: Record<string, string>;
-  cwd?: string;
-  // http 和 sse 字段
-  url?: string;
-  headers?: Record<string, string>;
-  // 通用字段
-  [key: string]: any;
-}
-
-// v3.7.0: MCP 服务器应用启用状态
-export interface McpApps {
-  claude: boolean;
-  "claude-desktop"?: boolean;
-  codex: boolean;
-  gemini: boolean;
-  opencode: boolean;
-  openclaw: boolean;
-  hermes: boolean;
-}
-
-// MCP 服务器条目（v3.7.0 统一结构）
-export interface McpServer {
-  id: string;
-  name: string;
-  server: McpServerSpec;
-  apps: McpApps; // v3.7.0: 标记应用到哪些客户端
-  description?: string;
-  tags?: string[];
-  homepage?: string;
-  docs?: string;
-  // 兼容旧字段（v3.6.x 及以前）
-  enabled?: boolean; // 已废弃，v3.7.0 使用 apps 字段
-  source?: string;
-  [key: string]: any;
-}
-
-// MCP 服务器映射（id -> McpServer）
-export type McpServersMap = Record<string, McpServer>;
-
-// MCP 配置状态
-export interface McpStatus {
-  userConfigPath: string;
-  userConfigExists: boolean;
-  serverCount: number;
-}
-
-// 新：来自 config.json 的 MCP 列表响应
-export interface McpConfigResponse {
-  configPath: string;
-  servers: Record<string, McpServer>;
 }
 
 // ============================================================================
@@ -595,19 +506,6 @@ export interface OpenCodeProviderConfig {
   models: Record<string, OpenCodeModel>;
 }
 
-// OpenCode MCP 服务器配置（与统一格式不同）
-export interface OpenCodeMcpServerSpec {
-  type: "local" | "remote";
-  // local 类型字段
-  command?: string[]; // 与统一格式不同：命令和参数合并为数组
-  environment?: Record<string, string>; // 与统一格式不同：使用 environment 而非 env
-  // remote 类型字段
-  url?: string;
-  headers?: Record<string, string>;
-  // 通用字段
-  enabled?: boolean;
-}
-
 // ============================================================================
 // OpenClaw 专属配置（v3.11.0+）
 // ============================================================================
@@ -651,8 +549,6 @@ export interface OpenClawWriteOutcome {
   warnings: OpenClawHealthWarning[];
 }
 
-export type OpenClawToolsProfile = "minimal" | "coding" | "messaging" | "full";
-
 // OpenClaw 供应商配置（settings_config 结构）
 // 对应 OpenClaw 的 models.providers.<provider-id> 配置
 export interface OpenClawProviderConfig {
@@ -662,28 +558,6 @@ export interface OpenClawProviderConfig {
   models?: OpenClawModel[]; // 可用模型列表
   headers?: Record<string, string>; // 自定义请求头（如 User-Agent）
   authHeader?: boolean; // 供应商自定义认证开关（如 Longcat）
-}
-
-// OpenClaw agents.defaults 完整配置
-export interface OpenClawAgentsDefaults {
-  model?: OpenClawDefaultModel;
-  models?: Record<string, OpenClawModelCatalogEntry>;
-  timeoutSeconds?: number;
-  timeout?: number;
-  [key: string]: unknown; // preserve unknown fields
-}
-
-// OpenClaw env 配置（openclaw.json 的 env 节点）
-export interface OpenClawEnvConfig {
-  [key: string]: unknown;
-}
-
-// OpenClaw tools 配置（openclaw.json 的 tools 节点）
-export interface OpenClawToolsConfig {
-  profile?: OpenClawToolsProfile | string;
-  allow?: string[];
-  deny?: string[];
-  [key: string]: unknown; // preserve unknown fields
 }
 
 // ============================================================================

@@ -46,10 +46,6 @@ pub fn should_trigger_for_table(table: &str) -> bool {
         normalized.as_str(),
         "providers"
             | "provider_endpoints"
-            | "mcp_servers"
-            | "prompts"
-            | "skills"
-            | "skill_repos"
             | "settings"
             | "proxy_config"
     )

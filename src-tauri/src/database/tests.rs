@@ -619,9 +619,6 @@ fn schema_dry_run_does_not_write_to_disk() {
     let config = MultiAppConfig {
         version: 2,
         apps,
-        mcp: Default::default(),
-        prompts: Default::default(),
-        skills: Default::default(),
         common_config_snippets: Default::default(),
         claude_common_config_snippet: None,
     };
@@ -669,9 +666,6 @@ fn dry_run_validates_schema_compatibility() {
     let config = MultiAppConfig {
         version: 2,
         apps,
-        mcp: Default::default(),
-        prompts: Default::default(),
-        skills: Default::default(),
         common_config_snippets: Default::default(),
         claude_common_config_snippet: None,
     };

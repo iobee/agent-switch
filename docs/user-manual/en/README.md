@@ -1,6 +1,6 @@
 # CC Switch User Manual
 
-> All-in-One Assistant for Claude Code / Claude Desktop / Codex / Gemini CLI / OpenCode / OpenClaw / Hermes
+> Local AI API Gateway and model/provider switcher
 
 ## Table of Contents
 
@@ -22,25 +22,18 @@ CC Switch User Manual
 │   ├── 2.5 Usage Query
 │   └── 2.6 Claude Desktop
 │
-├── 3. Extensions
-│   ├── 3.1 MCP Server Management
-│   ├── 3.2 Prompts Management
-│   ├── 3.3 Skills Management
-│   ├── 3.4 Session Manager
-│   └── 3.5 Workspace & Memory
+├── 3. Local Gateway & High Availability
+│   ├── 3.1 Gateway Service
+│   ├── 3.2 App Takeover
+│   ├── 3.3 Failover
+│   ├── 3.4 Usage Statistics
+│   └── 3.5 Model Test
 │
-├── 4. Proxy & High Availability
-│   ├── 4.1 Proxy Service
-│   ├── 4.2 App Takeover
-│   ├── 4.3 Failover
-│   ├── 4.4 Usage Statistics
-│   └── 4.5 Model Test
-│
-└── 5. FAQ
-    ├── 5.1 Configuration Files
-    ├── 5.2 FAQ
-    ├── 5.3 Deep Link Protocol
-    └── 5.4 Environment Variable Conflicts
+└── 4. FAQ
+    ├── 4.1 Configuration Files
+    ├── 4.2 FAQ
+    ├── 4.3 Deep Link Protocol
+    └── 4.4 Environment Variable Conflicts
 ```
 
 ## File List
@@ -66,27 +59,17 @@ CC Switch User Manual
 | [2.5-usage-query.md](./2-providers/2.5-usage-query.md) | Usage query, remaining balance, multi-plan display |
 | [2.6-claude-desktop.md](./2-providers/2.6-claude-desktop.md) | Claude Desktop third-party providers, direct mode, and model mapping |
 
-### 3. Extensions
+### 3. Local Gateway & High Availability
 
 | File | Description |
 |------|-------------|
-| [3.1-mcp.md](./3-extensions/3.1-mcp.md) | MCP protocol, add servers, app binding |
-| [3.2-prompts.md](./3-extensions/3.2-prompts.md) | Create presets, activate/switch, smart backfill |
-| [3.3-skills.md](./3-extensions/3.3-skills.md) | Discover skills, install/uninstall, repository management |
-| [3.4-sessions.md](./3-extensions/3.4-sessions.md) | Session Manager: browse, search, resume, delete sessions |
-| [3.5-workspace.md](./3-extensions/3.5-workspace.md) | Workspace files and daily memory (OpenClaw) |
+| [3.1-service.md](./4-proxy/4.1-service.md) | Start Gateway, configuration, running status |
+| [3.2-routing.md](./4-proxy/4.2-routing.md) | App routing, configuration changes, status indicators |
+| [3.3-failover.md](./4-proxy/4.3-failover.md) | Failover queue, circuit breaker, health status |
+| [3.4-usage.md](./4-proxy/4.4-usage.md) | Usage statistics, trend charts, pricing configuration |
+| [3.5-model-test.md](./4-proxy/4.5-model-test.md) | Model test, health check, latency testing |
 
-### 4. Proxy & High Availability
-
-| File | Description |
-|------|-------------|
-| [4.1-service.md](./4-proxy/4.1-service.md) | Start proxy, configuration, running status |
-| [4.2-routing.md](./4-proxy/4.2-routing.md) | App routing, configuration changes, status indicators |
-| [4.3-failover.md](./4-proxy/4.3-failover.md) | Failover queue, circuit breaker, health status |
-| [4.4-usage.md](./4-proxy/4.4-usage.md) | Usage statistics, trend charts, pricing configuration |
-| [4.5-model-test.md](./4-proxy/4.5-model-test.md) | Model test, health check, latency testing |
-
-### 5. FAQ
+### 4. FAQ
 
 | File | Description |
 |------|-------------|
@@ -101,8 +84,8 @@ CC Switch User Manual
 - **Installation issues**: See [1.2 Installation Guide](./1-getting-started/1.2-installation.md)
 - **Configure providers**: See [2.1 Add Provider](./2-providers/2.1-add.md)
 - **Use Claude Desktop**: See [2.6 Claude Desktop](./2-providers/2.6-claude-desktop.md)
-- **Using proxy**: See [4.1 Proxy Service](./4-proxy/4.1-service.md)
-- **Having trouble**: See [5.2 FAQ](./5-faq/5.2-questions.md)
+- **Using Gateway**: See [3.1 Gateway Service](./4-proxy/4.1-service.md)
+- **Having trouble**: See [4.2 FAQ](./5-faq/5.2-questions.md)
 
 ## Version Information
 
@@ -122,7 +105,6 @@ CC Switch User Manual
 - **Quota & Balance Display**: Official subscriptions (Claude/Codex/Gemini/Copilot/Codex OAuth) auto-display quotas; Token Plan and third-party balances use built-in templates with one-click enable — see [2.5 Usage Query](./2-providers/2.5-usage-query.md)
 - **Codex OAuth Reverse Proxy**: Reuse your ChatGPT account's Codex service inside Claude Code — see [2.1 Add Provider](./2-providers/2.1-add.md)
 - **Per-App Tray Submenus**: Claude / Codex / Gemini submenus show the current provider and available usage summaries — see [2.2 Switch Provider](./2-providers/2.2-switch.md)
-- **Skills Discovery & Batch Updates**: SHA-256 update detection, batch updates, skills.sh public registry search — see [3.3 Skills Management](./3-extensions/3.3-skills.md)
 - **Full URL Endpoint Mode**: Advanced option to treat `base_url` as the full upstream endpoint — see [2.1 Add Provider](./2-providers/2.1-add.md)
 - **OpenCode / OpenClaw / Hermes Stream Check Coverage**: Stream Check covers Claude / Codex / Gemini / OpenCode / OpenClaw / Hermes — see [4.5 Model Test](./4-proxy/4.5-model-test.md)
 
