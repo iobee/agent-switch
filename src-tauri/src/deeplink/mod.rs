@@ -1,7 +1,7 @@
-//! Deep link import functionality for CC Switch
+//! Deep link import functionality for Agent Switch
 //!
-//! This module implements the ccswitch:// protocol for importing configurations
-//! via deep links. CC Switch currently supports provider imports only.
+//! This module implements the agentswitch:// protocol for importing configurations
+//! via deep links. Agent Switch currently supports provider imports only.
 //!
 
 mod parser;
@@ -18,7 +18,7 @@ pub use provider::{import_provider_from_deeplink, parse_and_merge_config};
 
 /// Deep link import request model
 ///
-/// Represents a parsed ccswitch:// URL ready for processing.
+/// Represents a parsed agentswitch:// URL ready for processing.
 /// This struct contains the fields supported by provider imports.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

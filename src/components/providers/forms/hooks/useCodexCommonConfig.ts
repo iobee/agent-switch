@@ -8,7 +8,7 @@ import {
 import { configApi } from "@/lib/api";
 import { normalizeTomlText } from "@/utils/textNormalization";
 
-const LEGACY_STORAGE_KEY = "cc-switch:codex-common-config-snippet";
+const STORAGE_KEY = "agent-switch:codex-common-config-snippet";
 const DEFAULT_CODEX_COMMON_CONFIG_SNIPPET = `# Common Codex config
 # Add your common TOML configuration here`;
 
@@ -97,7 +97,7 @@ export function useCodexCommonConfig({
           if (typeof window !== "undefined") {
             try {
               const legacySnippet =
-                window.localStorage.getItem(LEGACY_STORAGE_KEY);
+                window.localStorage.getItem(STORAGE_KEY);
               if (legacySnippet && legacySnippet.trim()) {
                 // 迁移到 config.json
                 await configApi.setCommonConfigSnippet("codex", legacySnippet);
@@ -105,7 +105,7 @@ export function useCodexCommonConfig({
                   setCommonConfigSnippetState(legacySnippet);
                 }
                 // 清理 localStorage
-                window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+                window.localStorage.removeItem(STORAGE_KEY);
                 console.log(
                   "[迁移] Codex 通用配置已从 localStorage 迁移到 config.json",
                 );

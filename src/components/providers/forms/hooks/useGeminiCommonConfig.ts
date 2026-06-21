@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { configApi } from "@/lib/api";
 
-const LEGACY_STORAGE_KEY = "cc-switch:gemini-common-config-snippet";
+const STORAGE_KEY = "agent-switch:gemini-common-config-snippet";
 const DEFAULT_GEMINI_COMMON_CONFIG_SNIPPET = "{}";
 
 const GEMINI_COMMON_ENV_FORBIDDEN_KEYS = [
@@ -173,7 +173,7 @@ export function useGeminiCommonConfig({
           if (typeof window !== "undefined") {
             try {
               const legacySnippet =
-                window.localStorage.getItem(LEGACY_STORAGE_KEY);
+                window.localStorage.getItem(STORAGE_KEY);
               if (legacySnippet && legacySnippet.trim()) {
                 const parsed = parseSnippetEnv(legacySnippet);
                 if (parsed.error) {
@@ -188,7 +188,7 @@ export function useGeminiCommonConfig({
                   setCommonConfigSnippetState(legacySnippet);
                 }
                 // 清理 localStorage
-                window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+                window.localStorage.removeItem(STORAGE_KEY);
                 console.log(
                   "[迁移] Gemini 通用配置已从 localStorage 迁移到 config.json",
                 );

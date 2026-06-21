@@ -8,7 +8,7 @@ import type {
 
 /**
  * OpenClaw provider integration API.
- * CC Switch only touches the provider/model fields required for local Gateway
+ * Agent Switch only touches the provider/model fields required for local Gateway
  * switching. OpenClaw workspace, env, tools, and agent defaults management are
  * intentionally outside this app surface.
  */

@@ -1,10 +1,10 @@
 [package]
-name = "cc-switch"
+name = "agent-switch"
 version = "3.16.3"
-description = "Local AI API Gateway and model switcher for Claude Code, Codex & Gemini CLI"
+description = "Local Agent API Gateway and model switcher for Claude Code, Codex & Gemini CLI"
 authors = ["Jason Young"]
 license = "MIT"
-repository = "https://github.com/farion1231/cc-switch"
+repository = "https://github.com/iobee/agent-switch"
 edition = "2021"
 rust-version = "1.85.0"
 

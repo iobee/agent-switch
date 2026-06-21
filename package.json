@@ -1,7 +1,7 @@
 {
-  "name": "cc-switch",
+  "name": "agent-switch",
   "version": "3.16.3",
-  "description": "Local AI API Gateway and model switcher for Claude Code, Codex & Gemini CLI",
+  "description": "Local Agent API Gateway and model switcher for Claude Code, Codex & Gemini CLI",
   "type": "module",
   "scripts": {
     "dev": "pnpm tauri dev",

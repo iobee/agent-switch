@@ -1,4 +1,4 @@
-# CC Switch User Manual / 用户手册 / ユーザーマニュアル
+# Agent Switch User Manual / 用户手册 / ユーザーマニュアル
 
 > Local AI API Gateway and model/provider switcher
 
@@ -14,9 +14,9 @@
 
 - Documentation version: v3.16.0
 - Last updated: 2026-05-29
-- Compatible with CC Switch v3.16.0+
+- Compatible with Agent Switch v3.16.0+
 
 ## Links
 
-- [GitHub Issues](https://github.com/farion1231/cc-switch/issues)
-- [GitHub Repository](https://github.com/farion1231/cc-switch)
+- [GitHub Issues](https://github.com/iobee/agent-switch/issues)
+- [GitHub Repository](https://github.com/iobee/agent-switch)
